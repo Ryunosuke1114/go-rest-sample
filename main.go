@@ -1,13 +1,33 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"main/handler"
+	"main/infra"
+	"log"
+	"main/service"
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run() // 0.0.0.0:8080 でサーバーを立てます。
+	engine := infra.DBInit() 
+	factory := service.NewService(engine)
+
+	defer func(){
+		log.Println("engine closed")
+		engine.Close()
+	}()
+
+	g := gin.Default()
+
+	routes := g.Group("/v1")
+
+	{
+		routes.POST("/users" , handler.Create)
+		routes.GET("/users" , handler.GetAll)
+		routes.GET("/users/:user-id", handler.GetOne)
+		routes.PUT("/users/:user-id" , handler.Update)
+		routes.DELETE("/users/:user-id" , handler.Delete)
+	}
+
+	g.Run(":3000")
 }
