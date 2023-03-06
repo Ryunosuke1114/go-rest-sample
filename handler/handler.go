@@ -2,6 +2,8 @@ package handler
 
 import (
 	"main/service"
+	"strconv"
+	"log"
 	"github.com/gin-gonic/gin/binding"
 	"net/http"
 	"main/model"
@@ -21,9 +23,9 @@ func Create(c *gin.Context){
 	service := c.MustGet(service.ServiceKey).(service.Servicer)
 	user := service.NewUser()
 
-	payload , err := user.Create(&input)
-	if err != nil{
-		log,Fatal(err)
+	payload, err := user.Create(&input)
+	if err != nil {
+		log.Fatal(err)
 	}
 
     c.JSON(http.StatusOK , payload)
@@ -44,7 +46,8 @@ func GetOne (c *gin.Context){
 	if err != nil{
 		log.Fatal(err)
 	}
-	user = service.NewUser()
+	service := c.MustGet(service.ServiceKey).(service.Servicer)
+	user := service.NewUser()
 	payload, err := user.GetOne(userID)
 	if err != nil{
 		log.Fatal(err)
@@ -74,8 +77,8 @@ func Update(c *gin.Context){
 	c.JSON(http.StatusOK, payload)
 }
 
-func Delete (c *gin Context){
-	userID, err := stconv.Atoi((c.Param("user-id"))) 
+func Delete (c *gin.Context){
+	userID, err := strconv.Atoi((c.Param("user-id"))) 
 	if err != nil{
 		log.Fatal(err)
 	}

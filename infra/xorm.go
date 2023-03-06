@@ -1,5 +1,6 @@
-package main
+package infra
 import (
+	"main/model"
 	"log"
 	"xorm.io/xorm"
 )
